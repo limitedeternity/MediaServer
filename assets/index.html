@@ -23,20 +23,47 @@
       }
 
       .wrapper {
-        width: 400px;
-        margin: 0 auto;
-        padding: 40px 0;
+        display: -ms-grid;
+        display: grid;
+        grid-gap: 2px;
+        -ms-grid-columns: repeat(12, 1fr);
+        grid-template-columns: repeat(12, 1fr);
+        -webkit-box-pack: center;
+        -ms-flex-pack: center;
+        justify-content: center;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+        padding: 1.75em 0;
       }
 
       .item {
-        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
         background-color: white;
-        width: 400px;
-        height: 50px;
+        width: 90%;
+        height: 2.75em;
+        overflow: hidden;
+        -webkit-transition-duration: 0.5s;
+        -o-transition-duration: 0.5s;
         transition-duration: 0.5s;
-        position: relative;
-        padding-top: 30px;
+        -ms-grid-column: 4;
+        -ms-grid-column-span: 6;
+        grid-column: 4 / 10;
+        -ms-grid-column-align: center;
+        justify-self: center;
+        padding-top: 1.5em;
         text-align: center;
+      }
+
+      @media (max-width: 650px) {
+        .wrapper {
+          -ms-grid-columns: 1fr;
+          grid-template-columns: 1fr;
+        }
+
+        .item {
+          -ms-grid-column: 1;
+          grid-column: 1;
+        }
       }
 
       .item:hover {
@@ -45,11 +72,14 @@
       }
 
       .item.active {
+        -webkit-box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
         box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
         border-bottom: none;
         color: white;
         background-color: #0083f5;
+        -o-transition-delay: 0.5s;
         transition-delay: 0.5s;
+        -ms-transform: scale(1.1, 1.1);
         transform: scale(1.1, 1.1);
         -webkit-transition-delay: 0.5s;
         -webkit-transform: scale(1.1, 1.1);
@@ -57,8 +87,14 @@
       }
 
       #view-frame {
+        display: -webkit-box;
+        display: -ms-flexbox;
         display: flex;
+        -webkit-box-pack: center;
+        -ms-flex-pack: center;
         justify-content: center;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
         align-items: center;
       }
 
@@ -107,103 +143,117 @@
             Array.from(document.querySelectorAll(".item")).forEach(function(
               el
             ) {
-              el.addEventListener(
-                "click",
-                function(evt) {
-                  if (evt.target.classList.contains("active")) {
-                    return;
-                  }
+              el.addEventListener("click", function(evt) {
+                if (evt.target.classList.contains("active")) {
+                  document.querySelector("#view-frame").innerHTML = "";
+                  evt.target.classList.remove("active");
+                  return;
+                }
 
-                  var file = evt.target.innerText;
-                  var domNode = null;
+                var file = evt.target.innerText;
+                var domNode = null;
 
-                  if (/ogg$|mp3$|flac$|wav$/.exec(file)) {
-                    var player = document.createElement("audio");
-                    player.setAttribute("loop", true);
-                    player.setAttribute("controls", true);
-                    player.setAttribute("src", "/content/" + file);
-                    domNode = player;
-                  } else if (/mp4$|flv$/.exec(file)) {
-                    var player = document.createElement("video");
-                    player.setAttribute("playsinline", true);
-                    player.setAttribute("controls", true);
-                    player.setAttribute("src", "/content/" + file);
-                    domNode = player;
-                  } else if (/jpeg$|jpg$|png$|gif$/.exec(file)) {
-                    var img = document.createElement("img");
-                    img.setAttribute("src", "/content/" + file);
-                    domNode = img;
-                  }
+                if (/ogg$|mp3$|flac$|wav$/.exec(file)) {
+                  var player = document.createElement("audio");
+                  player.setAttribute("loop", true);
+                  player.setAttribute("controls", true);
+                  player.setAttribute("src", "/content/" + file);
+                  domNode = player;
+                } else if (/mp4$|flv$/.exec(file)) {
+                  var player = document.createElement("video");
+                  player.setAttribute("playsinline", true);
+                  player.setAttribute("controls", true);
+                  player.setAttribute("src", "/content/" + file);
+                  domNode = player;
+                } else if (/jpeg$|jpg$|png$|gif$/.exec(file)) {
+                  var img = document.createElement("img");
+                  img.setAttribute("src", "/content/" + file);
+                  domNode = img;
+                }
 
-                  if (domNode) {
-                    document.querySelector("#view-frame").innerHTML = "";
-                    document.querySelector("#view-frame").appendChild(domNode);
+                if (!domNode) {
+                  return;
+                }
 
-                    document.querySelectorAll(".item").forEach(function(x) {
-                      x.classList.remove("active");
-                    });
+                document.querySelector("#view-frame").innerHTML = "";
+                document.querySelector("#view-frame").appendChild(domNode);
 
-                    evt.target.classList.add("active");
+                document.querySelectorAll(".item").forEach(function(x) {
+                  x.classList.remove("active");
+                });
 
-                    window.requestAnimFrame = (function() {
-                      return (
-                        window.requestAnimationFrame ||
-                        window.webkitRequestAnimationFrame ||
-                        window.mozRequestAnimationFrame
-                      );
-                    })();
+                evt.target.classList.add("active");
 
-                    function scrollToY(scrollPosY, speedParam, easingParam) {
-                      var scrollY =
-                        window.scrollY || document.documentElement.scrollTop;
-                      var scrollTargetY = scrollPosY || 0;
-                      var speed = speedParam || 2000;
-                      var easing = easingParam || "easeOutSine";
-                      var currentTime = 0;
-                      var time = Math.max(
-                        0.1,
-                        Math.min(Math.abs(scrollY - scrollTargetY) / speed, 0.8)
-                      );
+                if (domNode instanceof HTMLMediaElement) {
+                  var mediaEl = document.querySelector(
+                    "#view-frame > :first-child"
+                  );
 
-                      var easingEquations = {
-                        easeOutSine: function(pos) {
-                          return Math.sin(pos * (Math.PI / 2));
-                        },
-                        easeInOutSine: function(pos) {
-                          return -0.5 * (Math.cos(Math.PI * pos) - 1);
-                        },
-                        easeInOutQuint: function(pos) {
-                          if ((pos /= 0.5) < 1) {
-                            return 0.5 * Math.pow(pos, 5);
-                          } else {
-                            return 0.5 * (Math.pow(pos - 2, 5) + 2);
-                          }
-                        }
-                      };
+                  mediaEl.addEventListener("canplay", function() {
+                    mediaEl.play();
+                  });
+                }
 
-                      (function tick() {
-                        currentTime += 1 / 60;
+                if (domNode instanceof HTMLAudioElement) {
+                  return;
+                }
 
-                        var p = currentTime / time;
-                        var t = easingEquations[easing](p);
+                window.requestAnimFrame = (function() {
+                  return (
+                    window.requestAnimationFrame ||
+                    window.webkitRequestAnimationFrame ||
+                    window.mozRequestAnimationFrame
+                  );
+                })();
 
-                        if (p < 1) {
-                          window.requestAnimFrame(tick);
-                          window.scrollTo(
-                            0,
-                            scrollY + (scrollTargetY - scrollY) * t
-                          );
-                        } else {
-                          window.scrollTo(0, scrollTargetY);
-                        }
-                      })();
+                function scrollToY(scrollPosY, speedParam, easingParam) {
+                  var scrollY =
+                    window.scrollY || document.documentElement.scrollTop;
+                  var scrollTargetY = scrollPosY || 0;
+                  var speed = speedParam || 2000;
+                  var easing = easingParam || "easeOutSine";
+                  var currentTime = 0;
+                  var time = Math.max(
+                    0.1,
+                    Math.min(Math.abs(scrollY - scrollTargetY) / speed, 0.8)
+                  );
+
+                  var easingEquations = {
+                    easeOutSine: function(pos) {
+                      return Math.sin(pos * (Math.PI / 2));
+                    },
+                    easeInOutSine: function(pos) {
+                      return -0.5 * (Math.cos(Math.PI * pos) - 1);
+                    },
+                    easeInOutQuint: function(pos) {
+                      if ((pos /= 0.5) < 1) {
+                        return 0.5 * Math.pow(pos, 5);
+                      } else {
+                        return 0.5 * (Math.pow(pos - 2, 5) + 2);
+                      }
                     }
+                  };
 
-                    scrollToY(0, 400, "easeInOutQuint");
-                  }
-                },
-                false
-              );
+                  (function tick() {
+                    currentTime += 1 / 60;
+
+                    var p = currentTime / time;
+                    var t = easingEquations[easing](p);
+
+                    if (p < 1) {
+                      window.requestAnimFrame(tick);
+                      window.scrollTo(
+                        0,
+                        scrollY + (scrollTargetY - scrollY) * t
+                      );
+                    } else {
+                      window.scrollTo(0, scrollTargetY);
+                    }
+                  })();
+                }
+
+                scrollToY(0, 400, "easeInOutQuint");
+              });
             });
           });
         });
