@@ -119,13 +119,12 @@
 
                   if (/ogg$|mp3$|flac$|wav$/.exec(file)) {
                     var player = document.createElement("audio");
-                    player.setAttribute("id", "player");
+                    player.setAttribute("loop", true);
                     player.setAttribute("controls", true);
                     player.setAttribute("src", "/content/" + file);
                     domNode = player;
                   } else if (/mp4$|flv$/.exec(file)) {
                     var player = document.createElement("video");
-                    player.setAttribute("id", "player");
                     player.setAttribute("playsinline", true);
                     player.setAttribute("controls", true);
                     player.setAttribute("src", "/content/" + file);
