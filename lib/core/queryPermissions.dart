@@ -1,4 +1,4 @@
-import 'dart:async' show Future;
+import 'dart:async';
 import 'package:permission_handler/permission_handler.dart';
 
 Future<void> queryPermissions() async {

@@ -20,6 +20,7 @@ dependencies:
   flutter:
     sdk: flutter
 
+  connectivity: ^0.4.3+1
   folder_picker: ^0.2.1
   get_ip: ^0.3.0
   jaguar: ^2.4.36

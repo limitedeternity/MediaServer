@@ -136,7 +136,7 @@
             json.forEach(function(file) {
               var child = document.createElement("div");
               child.setAttribute("class", "item");
-              child.textContent = file.trim();
+              child.textContent = file;
 
               document.querySelector(".wrapper").appendChild(child);
             });
@@ -146,6 +146,17 @@
             ) {
               el.addEventListener("click", function(evt) {
                 if (evt.target.classList.contains("active")) {
+                  {
+                    var mediaEl = document.querySelector(
+                      "#view-frame > :first-child"
+                    );
+
+                    if (mediaEl instanceof HTMLMediaElement) {
+                      mediaEl.pause();
+                      mediaEl.src = mediaEl.src;
+                    }
+                  }
+
                   document.querySelector("#view-frame").innerHTML = "";
                   evt.target.classList.remove("active");
                   return;
@@ -156,14 +167,16 @@
 
                 if (/ogg$|mp3$|flac$|wav$/.exec(file)) {
                   var player = document.createElement("audio");
-                  player.setAttribute("loop", true);
-                  player.setAttribute("controls", true);
+                  player.setAttribute("preload", "none");
+                  player.setAttribute("loop", "true");
+                  player.setAttribute("controls", "true");
                   player.setAttribute("src", "/content/" + file);
                   domNode = player;
                 } else if (/mp4$|flv$/.exec(file)) {
                   var player = document.createElement("video");
-                  player.setAttribute("playsinline", true);
-                  player.setAttribute("controls", true);
+                  player.setAttribute("preload", "none");
+                  player.setAttribute("playsinline", "true");
+                  player.setAttribute("controls", "true");
                   player.setAttribute("src", "/content/" + file);
                   domNode = player;
                 } else if (/jpeg$|jpg$|png$|gif$/.exec(file)) {
@@ -176,6 +189,17 @@
                   return;
                 }
 
+                {
+                  var mediaEl = document.querySelector(
+                    "#view-frame > :first-child"
+                  );
+
+                  if (mediaEl && mediaEl instanceof HTMLMediaElement) {
+                    mediaEl.pause();
+                    mediaEl.src = mediaEl.src;
+                  }
+                }
+
                 document.querySelector("#view-frame").innerHTML = "";
                 document.querySelector("#view-frame").appendChild(domNode);
 
@@ -186,13 +210,7 @@
                 evt.target.classList.add("active");
 
                 if (domNode instanceof HTMLMediaElement) {
-                  var mediaEl = document.querySelector(
-                    "#view-frame > :first-child"
-                  );
-
-                  mediaEl.addEventListener("canplay", function() {
-                    mediaEl.play();
-                  });
+                  document.querySelector("#view-frame > :first-child").play();
                 }
 
                 if (domNode instanceof HTMLAudioElement) {

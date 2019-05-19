@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:connectivity/connectivity.dart';
 import 'package:folder_picker/folder_picker.dart';
 import 'package:get_ip/get_ip.dart';
 import 'package:jaguar/jaguar.dart';
@@ -15,16 +17,34 @@ class Application extends StatefulWidget {
 class ApplicationState extends State<Application> {
   bool permissionsGranted = false;
   dynamic server;
+  StreamSubscription<ConnectivityResult> connectivitySubscription;
 
   @override
   void initState() {
     super.initState();
 
     queryPermissions().then((void _) {
-      this.setState(() {
-        this.permissionsGranted = true;
+      setState(() {
+        permissionsGranted = true;
       });
     });
+
+    connectivitySubscription = Connectivity().onConnectivityChanged.listen(
+      (ConnectivityResult result) async {
+        if (server != null) {
+          await server.close();
+          return setState(() {
+            server = null;
+          });
+        }
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    connectivitySubscription.cancel();
   }
 
   @override
@@ -32,7 +52,7 @@ class ApplicationState extends State<Application> {
     return new Scaffold(
       backgroundColor: Theme.of(context).primaryColor,
       body: new Center(
-        child: this.permissionsGranted
+        child: permissionsGranted
             ? new Column(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -59,24 +79,23 @@ class ApplicationState extends State<Application> {
                                 BuildContext context,
                                 Directory folder,
                               ) async {
-                                final jr = new Jaguar(port: 8888);
-                                jr.staticFiles("/content/*", "${folder.path}");
-
-                                jr.get(
-                                  "/",
-                                  (Context ctx) async {
-                                    return await rootBundle
-                                        .loadString("assets/index.html");
-                                  },
-                                  mimeType: "text/html",
-                                );
-
-                                jr.getJson(
-                                  "/listDir",
-                                  (Context ctx) async {
-                                    return await filesInDirectory(folder);
-                                  },
-                                );
+                                Jaguar jr = new Jaguar(port: 8888);
+                                jr
+                                  ..staticFiles("/content/*", "${folder.path}")
+                                  ..get(
+                                    "/",
+                                    (Context ctx) async {
+                                      return await rootBundle
+                                          .loadString("assets/index.html");
+                                    },
+                                    mimeType: "text/html",
+                                  )
+                                  ..getJson(
+                                    "/listDir",
+                                    (Context ctx) async {
+                                      return await filesInDirectory(folder);
+                                    },
+                                  );
 
                                 await jr.serve();
                                 return setState(() {
