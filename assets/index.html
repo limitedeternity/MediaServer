@@ -133,11 +133,18 @@
       whenDomReady().then(function() {
         fetch("/listDir").then(function(res) {
           res.json().then(function(json) {
+            if (!Array.isArray(json) || !json.length) {
+              var child = document.createElement("div");
+              child.setAttribute("class", "item");
+              child.textContent = "Empty folder";
+              document.querySelector(".wrapper").appendChild(child);
+              return;
+            }
+
             json.forEach(function(file) {
               var child = document.createElement("div");
               child.setAttribute("class", "item");
               child.textContent = file;
-
               document.querySelector(".wrapper").appendChild(child);
             });
 
