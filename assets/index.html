@@ -141,12 +141,15 @@
               return;
             }
 
-            json.forEach(function(file) {
-              var child = document.createElement("div");
-              child.setAttribute("class", "item");
-              child.textContent = file;
-              document.querySelector(".wrapper").appendChild(child);
-            });
+            []
+              .concat(json)
+              .sort()
+              .forEach(function(file) {
+                var child = document.createElement("div");
+                child.setAttribute("class", "item");
+                child.textContent = file;
+                document.querySelector(".wrapper").appendChild(child);
+              });
 
             Array.from(document.querySelectorAll(".item")).forEach(function(
               el
