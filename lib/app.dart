@@ -79,7 +79,7 @@ class ApplicationState extends State<Application> {
                                 BuildContext context,
                                 Directory folder,
                               ) async {
-                                Jaguar jr = new Jaguar(port: 8888);
+                                Jaguar jr = new Jaguar(port: 65420);
                                 jr
                                   ..staticFiles("/content/*", "${folder.path}")
                                   ..get(
@@ -123,8 +123,8 @@ class ApplicationState extends State<Application> {
                             decoration: new InputDecoration.collapsed(
                               hintText:
                                   (snapshot.hasData && snapshot.data != null)
-                                      ? "http://${snapshot.data}:8888/"
-                                      : "http://...:8888/",
+                                      ? "http://${snapshot.data}:65420/"
+                                      : "http://...:65420/",
                               hintStyle: new TextStyle(color: Colors.grey),
                             ),
                           );
