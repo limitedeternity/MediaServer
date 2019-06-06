@@ -121,10 +121,11 @@ class ApplicationState extends State<Application> {
                             enabled: false,
                             textAlign: TextAlign.center,
                             decoration: new InputDecoration.collapsed(
-                              hintText:
-                                  (snapshot.hasData && snapshot.data != null)
-                                      ? "http://${snapshot.data}:65420/"
-                                      : "http://...:65420/",
+                              hintText: (snapshot.hasData &&
+                                      snapshot.data != null &&
+                                      snapshot.data.isNotEmpty)
+                                  ? "http://${snapshot.data}:65420/"
+                                  : "http://127.0.0.1:65420/",
                               hintStyle: new TextStyle(color: Colors.grey),
                             ),
                           );
