@@ -19,14 +19,6 @@ You need to unrestrict background data usage and turn off battery optimization f
 
 ## Meta
 
-Marise Hayashi – [Other projects](https://limitedeternity.github.io/)
-
-Distributed under the MIT license. See `LICENSE` for more information.
+Distributed under the GPL-3.0 license. See ``LICENSE`` for more information.
 
 [@limitedeternity](https://github.com/limitedeternity)
-
-## Contributing
-
-1. [Fork it](https://github.com/limitedeternity/MediaServer/fork)
-2. Commit your changes
-3. Create a new Pull Request
