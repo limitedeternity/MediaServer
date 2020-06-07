@@ -9,7 +9,7 @@ Future<List<String>> filesInDirectory(Directory dir) async {
     recursive: false,
     followLinks: false,
   )) {
-    FileSystemEntityType type = await FileSystemEntity.type(entity.path);
+    FileSystemEntityType type = FileSystemEntity.typeSync(entity.path);
     if (type == FileSystemEntityType.file) files.add(basename(entity.path));
   }
 
